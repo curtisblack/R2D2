@@ -1,60 +1,41 @@
-import smbus
-import logging
+from I2C import I2C
 
-class ProcessStateIndicator:
+class ProcessStateIndicator(I2C):
     def __init__(self, address):
-        self.address = address
-        self.i2c = smbus.SMBus(1)
+        I2C.__init__(self, address)
 
     def SetBrightness(self, brightness):
-        try:
-            self.i2c.write_i2c_block_data(self.address, 255, [brightness])
-        except IOError:
-            logging.warning("I2C communication error in " + self.Name + "ProcessStateIndicator.SetBrightness")
+        self.Send(7, [brightness])
 
     def SetDefault(self):
-        try:
-            self.i2c.write_byte(self.address, 0)
-        except IOError:
-            logging.warning("I2C communication error in " + self.Name + "ProcessStateIndicator.SetDefault")
+        self.Send(1)
 
     def SetOff(self):
-        try:
-            self.i2c.write_byte(self.address, 1)
-        except IOError:
-            logging.warning("I2C communication error in " + self.Name + "ProcessStateIndicator.SetOff")
+        self.Send(2)
 
     def SetError(self):
-        try:
-            self.i2c.write_byte(self.address, 2)
-        except IOError:
-            logging.warning("I2C communication error in " + self.Name + "ProcessStateIndicator.SetError")
+        self.Send(3)
 
     def SetColor1(self, r, g, b):
-        try:
-            self.i2c.write_i2c_block_data(self.address, 252, [r, g, b])
-        except IOError:
-            logging.warning("I2C communication error in " + self.Name + "ProcessStateIndicator.SetColor1")
+        self.Send(4, [r, g, b])
 
     def SetColor2(self, r, g, b):
-        try:
-            self.i2c.write_i2c_block_data(self.address, 253, [r, g, b])
-        except IOError:
-            logging.warning("I2C communication error in " + self.Name + "ProcessStateIndicator.SetColor2")
+        self.Send(5, [r, g, b])
 
     def ResetColors(self):
-        try:
-            self.i2c.write_byte(self.address, 254)
-        except IOError:
-            logging.warning("I2C communication error in " + self.Name + "ProcessStateIndicator.ResetColors")
+        self.Send(6)
+
+    def SetTransition(self, duration, minPause, maxPause):
+        self.Send(8, [duration / 10, minPause / 100, maxPause / 100])
+
+    def ResetTransition(self):
+        self.Send(9)
 
 class FrontProcessStateIndicator(ProcessStateIndicator):
     def __init__(self):
         ProcessStateIndicator.__init__(self, 28)
-        self.Name = "Front"
 
 class RearProcessStateIndicator(ProcessStateIndicator):
     def __init__(self):
         ProcessStateIndicator.__init__(self, 29)
-        self.Name = "Rear"
 

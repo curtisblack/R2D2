@@ -1,37 +1,26 @@
-import smbus
-import logging
+from I2C import I2C
 
-class MagicPanel:
+class MagicPanel(I2C):
     def __init__(self):
-        self.address = 20
-        self.i2c = smbus.SMBus(1)
+        I2C.__init__(self, 20)
 
     def SetBrightness(self, brightness):
-        try:
-            self.i2c.write_i2c_block_data(self.address, 255, [brightness])
-        except IOError:
-            logging.warning("I2C communication error in MagicPanel.SetBrightness")
+        self.Send(7, [brightness])
 
     def SetDefault(self):
-        try:
-            self.i2c.write_byte(self.address, 0)
-        except IOError:
-            logging.warning("I2C communication error in MagicPanel.SetDefault")
+        self.Send(1)
 
     def SetOff(self):
-        try:
-            self.i2c.write_byte(self.address, 1)
-        except IOError:
-            logging.warning("I2C communication error in MagicPanel.SetOff")
+        self.Send(2)
 
     def SetError(self):
-        try:
-            self.i2c.write_byte(self.address, 2)
-        except IOError:
-            logging.warning("I2C communication error in MagicPanel.SetError")
+        self.Send(3)
 
     def SetOn(self):
-        try:
-            self.i2c.write_byte(self.address, 3)
-        except IOError:
-            logging.warning("I2C communication error in MagicPanel.SetOn")
+        self.Send(4)
+
+    def Ping(self):
+        self.Send(6)
+
+    def SetRequirePing(self, require):
+        self.Send(5, [1 if require else 0])

@@ -1,31 +1,17 @@
-import smbus
-import logging
+from I2C import I2C
 
-class LifeFormScanner:
+class LifeFormScanner(I2C):
     def __init__(self):
-        self.address = 22
-        self.i2c = smbus.SMBus(1)
+        I2C.__init__(self, 22)
 
     def SetDefault(self):
-        try:
-            self.i2c.write_byte(self.address, 0)
-        except IOError:
-            logging.warning("I2C communication error in LifeFormScanner.SetDefault")
+        self.Send(1)
 
     def SetOff(self):
-        try:
-            self.i2c.write_byte(self.address, 1)
-        except IOError:
-            logging.warning("I2C communication error in LifeFormScanner.SetOff")
+        self.Send(2)
 
     def SetError(self):
-        try:
-            self.i2c.write_byte(self.address, 2)
-        except IOError:
-            logging.warning("I2C communication error in LifeFormScanner.SetError")
+        self.Send(3)
 
     def SetOn(self):
-        try:
-            self.i2c.write_byte(self.address, 3)
-        except IOError:
-            logging.warning("I2C communication error in LifeFormScanner.SetOn")
+        self.Send(4)

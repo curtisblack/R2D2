@@ -28,6 +28,6 @@ echo 23 > /sys/class/gpio/export
 echo out > /sys/class/gpio/gpio23/direction
 echo 1 > /sys/class/gpio/gpio23/value
 
-# Run the startup script.
-screen -dm -t "r2d2" bash -c "python /home/pi/R2D2/startup.py"
+# Run the startup script not as sudo.
+screen -dm -t "r2d2" bash -c "sudo su pi -c 'python /home/pi/R2D2/startup.py'"
 ```

@@ -1,24 +1,34 @@
+import os
+import sys
 import time
+import signal
+import traceback
+
+def handler(signal, frame):
+    sys.exit(0)
+
+signal.signal(signal.SIGTERM, handler)
+
+pipe_path = "/home/pi/r2"
+if not os.path.exists(pipe_path):
+    os.mkfifo(pipe_path)
+
+pipe_fd = os.open(pipe_path, os.O_RDONLY | os.O_NONBLOCK)
+pipe = os.fdopen(pipe_fd)
+
+def running():
+    message = pipe.read()
+    if message:
+        message = message.rstrip("\n")
+        if message == "stop":
+            return False
+    return True
 
 try:
-    exec(open("/home/pi/R2D2/demo.py").read(), globals())
+    exec(open("/home/pi/R2D2/basic.py").read(), globals())
 except Exception as e:
-    while True:
-        print e
-        time.sleep(1)
-# Turn on the power indicator light
+    f = open("crash.log", "a")
+    f.write(traceback.format_exc())
+    f.write("\n")
+    f.close()
 
-#from RPi.GPIO import *
-#from LED import *
-
-#setmode(BCM)
-#l = LED(23)
-#l.On()
-#import time
-#from R2D2 import *
-
-#r2 = R2D2()
-#r2.Head.FrontProcessStateIndicator.SetBrightness(2)
-
-#while True:
-#    time.sleep(0.1)

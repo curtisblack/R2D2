@@ -130,7 +130,18 @@ r2.DomeLights.Disable()
 print
 print "Measuring dome motor current (fuse 2)"
 print "-------------------------------------"
-IdomeMotor = (5, 10)
+r2.DomeMotor.Enable()
+time.sleep(0.2)
+r2.Head.Motor.Enable()
+time.sleep(1)
+r2.Head.Motor.SetSpeed(255)
+IdomeMotor = MeasureCurrent()#(5, 10)
+IdomeMotor = (IdomeMotor[0] - Iidle[0], IdomeMotor[1] - Iidle[0])
+r2.Head.Motor.SetSpeed(127)
+time.sleep(1)
+r2.Head.Motor.SetPosition(0)
+time.sleep(5)
+r2.DomeMotor.Disable()
 PrintPower(IdomeMotor[0], IdomeMotor[1], 2)
 
 print

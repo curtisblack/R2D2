@@ -1,59 +1,40 @@
-import smbus
-import logging
+from I2C import I2C
 
-class HoloProjector:
+class HoloProjector(I2C):
     def __init__(self, address):
-        self.address = address
-        self.i2c = smbus.SMBus(1)
+        I2C.__init__(self, address)
 
     def SetBrightness(self, brightness):
-        try:
-            self.i2c.write_i2c_block_data(self.address, 255, [brightness])
-        except IOError:
-            logging.warning("I2C communication error in " + self.Name + "HoloProjector.SetBrightness")
+        self.Send(9, [brightness])
 
     def SetDefault(self):
-        try:
-            self.i2c.write_byte(self.address, 0)
-        except IOError:
-            logging.warning("I2C communication error in " + self.Name + "HoloProjector.SetDefault")
+        self.Send(1)
 
     def SetOff(self):
-        try:
-            self.i2c.write_byte(self.address, 1)
-        except IOError:
-            logging.warning("I2C communication error in " + self.Name + "HoloProjector.SetOff")
+        self.Send(2)
+
+    def SetOn(self):
+        self.Send(4)
 
     def SetError(self):
-        try:
-            self.i2c.write_byte(self.address, 2)
-        except IOError:
-            logging.warning("I2C communication error in " + self.Name + "HoloProjector.SetError")
+        self.Send(3)
 
     def SetMessage(self):
-        try:
-            self.i2c.write_byte(self.address, 3)
-        except IOError:
-            logging.warning("I2C communication error in " + self.Name + "HoloProjector.SetMessage")
+        self.Send(5)
 
     def SetColor(self, r, g, b):
-        try:
-            self.i2c.write_i2c_block_data(self.address, 254, [r, g, b])
-        except IOError:
-            logging.warning("I2C communication error in " + self.Name + "HoloProjector.SetColor")
+        self.Send(8, [r, g, b])
 
 class FrontHoloProjector(HoloProjector):
     def __init__(self):
         HoloProjector.__init__(self, 25)
-        self.Name = "Front"
 
 class TopHoloProjector(HoloProjector):
     def __init__(self):
         HoloProjector.__init__(self, 26)
-        self.Name = "Top"
 
 class RearHoloProjector(HoloProjector):
     def __init__(self):
         HoloProjector.__init__(self, 27)
-        self.Name = "Rear"
+
 

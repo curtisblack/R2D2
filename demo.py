@@ -47,7 +47,7 @@ while True:
         break
     x = controller.Rx
     x *= abs(x)
-    speed = int(127 + 80 * x)
+    speed = int(127 + 127 * x)
     r2.Head.Motor.SetSpeed(speed)
     r2.Head.Motor.Ping()
     if r2.DomeLights.Enabled:
@@ -57,4 +57,5 @@ while True:
         else:
             r2.Head.MagicPanel.SetOn()
             #r2.Head.SetError()
+    r2.StatusDisplay.Update()
     time.sleep(1.0 / 30.0)
