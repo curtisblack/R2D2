@@ -1,8 +1,10 @@
+import time
 from I2C import I2C
 
 class HeadMotor(I2C):
-    def __init__(self):
-        I2C.__init__(self, 9)
+    def __init__(self, relay=None):
+        I2C.__init__(self, 9, relay)
+        self.lastPing = 0
 
     def SetSpeed(self, speed):
         self.Send(6, [speed])
@@ -23,6 +25,9 @@ class HeadMotor(I2C):
         self.Send(7, [1 if require else 0])
 
     def Ping(self):
-        self.Send(8)
+        t = time.time()
+        if t > self.lastPing + 0.05:
+            self.Send(8)
+            self.lastPing = t
 
 

@@ -81,8 +81,8 @@ class StatusDisplay(LCD):
             self.lastLine2UpdateTime = t
 
         if t > self.lastLine3UpdateTime + 0.05:
-            b = int(100 * self.R2D2.BrightnessControl.GetValue())
-            if abs(b - self.lastBrightness) > 2:
+            b = int(round(100 * self.R2D2.BrightnessControl.GetValue()))
+            if b != self.lastBrightness:
                 line3 = "\1 " + ("mute" if self.R2D2.Sound.IsMute() else str(self.R2D2.Sound.Volume) + "%") + " \2 " + str(b) + "%"
                 self.SetText(3, line3)
                 self.lastBrightness = b

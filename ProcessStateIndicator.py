@@ -1,8 +1,8 @@
 from I2C import I2C
 
 class ProcessStateIndicator(I2C):
-    def __init__(self, address):
-        I2C.__init__(self, address)
+    def __init__(self, address, relay=None):
+        I2C.__init__(self, address, relay)
 
     def SetBrightness(self, brightness):
         self.Send(7, [brightness])
@@ -32,10 +32,10 @@ class ProcessStateIndicator(I2C):
         self.Send(9)
 
 class FrontProcessStateIndicator(ProcessStateIndicator):
-    def __init__(self):
-        ProcessStateIndicator.__init__(self, 28)
+    def __init__(self, relay=None):
+        ProcessStateIndicator.__init__(self, 28, relay)
 
 class RearProcessStateIndicator(ProcessStateIndicator):
-    def __init__(self):
-        ProcessStateIndicator.__init__(self, 29)
+    def __init__(self, relay=None):
+        ProcessStateIndicator.__init__(self, 29, relay)
 

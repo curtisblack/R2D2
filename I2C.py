@@ -4,11 +4,14 @@ import traceback
 import inspect
 
 class I2C:
-    def __init__(self, address):
+    def __init__(self, address, relay=None):
         self.address = address
+        self.relay = relay
         self.i2c = smbus.SMBus(1)
 
     def Send(self, command, data = []):
+        if self.relay != None and not self.relay.Enabled:
+            return
         packet = [command, len(data)] + data
         crc = self.CRC(packet)
         bytes = [len(data)] + data + [crc]
@@ -20,7 +23,8 @@ class I2C:
             except IOError:
                 if i == attempts - 1:
                     caller = inspect.stack()[1]
-                    logging.warning(caller[1] + " " + caller[3] + "\n" + traceback.format_exc())
+                    if "HoloProjector" not in caller[1]:
+                        logging.warning(caller[1] + " " + caller[3] + "\n" + traceback.format_exc())
 
     def CRC(self, data):
         crc = 0x00

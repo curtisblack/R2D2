@@ -1,8 +1,8 @@
 from I2C import I2C
 
 class HoloProjector(I2C):
-    def __init__(self, address):
-        I2C.__init__(self, address)
+    def __init__(self, address, relay=None):
+        I2C.__init__(self, address, relay)
 
     def SetBrightness(self, brightness):
         self.Send(9, [brightness])
@@ -26,15 +26,15 @@ class HoloProjector(I2C):
         self.Send(8, [r, g, b])
 
 class FrontHoloProjector(HoloProjector):
-    def __init__(self):
-        HoloProjector.__init__(self, 25)
+    def __init__(self, relay=None):
+        HoloProjector.__init__(self, 25, relay)
 
 class TopHoloProjector(HoloProjector):
-    def __init__(self):
-        HoloProjector.__init__(self, 26)
+    def __init__(self, relay=None):
+        HoloProjector.__init__(self, 26, relay)
 
 class RearHoloProjector(HoloProjector):
-    def __init__(self):
-        HoloProjector.__init__(self, 27)
+    def __init__(self, relay=None):
+        HoloProjector.__init__(self, 27, relay)
 
 

@@ -1,7 +1,6 @@
 import time
 import math
 from Wire import *
-from R2D2 import *
 
 # Ah ratings of batteries
 batteries = [2.2, 20]
@@ -31,7 +30,7 @@ wireLengths = {
     12: 0, # right foot motor
 }
 
-r2 = R2D2()
+r2.StatusDisplay.SetText(4, "Running Diagnostics")
 
 r2.Relay1.Disable()
 r2.Relay2.Disable()

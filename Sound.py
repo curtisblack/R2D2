@@ -10,7 +10,10 @@ class Sound(object):
 
     #@property
     def get_Volume(self):
-        return int(os.popen("amixer sget PCM").read().split("[")[1].split("%")[0])
+        try:
+            return int(os.popen("amixer sget PCM").read().split("[")[1].split("%")[0])
+        except IndexError:
+            return 0
 
     #@Volume.setter
     def set_Volume(self, value):
