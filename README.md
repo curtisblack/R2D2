@@ -2,6 +2,10 @@
 
 ## Setup
 
+### Readonly File System
+
+It's a good idea to set the file system on the SD card to readonly to protect it from becoming corrupted if the Raspberry Pi loses power. This is a good guide: https://hallard.me/raspberry-pi-read-only/
+
 ### Startup Script
 
 Add the following lines to `/etc/rc.local`:
