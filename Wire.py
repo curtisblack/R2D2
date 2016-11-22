@@ -71,7 +71,7 @@ AWGTitle[30] = "0000 AWG"
 AWGTitle[31] = "Too large"
 
 def CalculateWireSize(voltage, current, length, loss=5):
-    result = round(((length * current * 0.04) / ((voltage * loss) / 100)) * 100) / 100
+    result = round(((length * current * 0.04) / ((voltage * loss) / 100.0)) * 100) / 100
     index = 0
     found = False
     while not found and AWGSize[index] != -1:
@@ -85,7 +85,7 @@ def CalculateWireSize(voltage, current, length, loss=5):
     return AWGTitle[index]
 
 def CalculateWireSize1(voltage, current, length, loss=5):
-    result = (length * current * 0.04) / ((voltage * loss) / 100.0)
+    result = (length * current * 0.04) / (float(voltage * loss) / 100.0)
     for i in range(len(AWGSize) - 1):
         if AWGSize[i] < result < AWGSize[i + 1]:
             return AWGTitle[i]
