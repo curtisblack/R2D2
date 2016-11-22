@@ -9,7 +9,7 @@ It's a good idea to set the file system on the SD card to readonly to protect it
 ### Software and Libraries
 
 ```bash
-sudo pip install Adafruit-GPIO Adafruit-MCP3008 Adafruit-PCA9685
+sudo pip install adafruit-mcp3008 adafruit-pca9685
 sudo apt-get install screen i2c-tools joystick python-pygame python-serial python-bluetooth pi-bluetooth bluez-utils
 ```
 

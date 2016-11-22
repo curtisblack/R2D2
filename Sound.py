@@ -4,7 +4,7 @@ from pygame import mixer
 
 class Sound:
     def __init__(self):
-        self.directory = "/home/pi/Sounds"
+        self.directory = "/home/pi/R2D2/Sounds"
         mixer.init()
 
     def PlayFile(self, file):
