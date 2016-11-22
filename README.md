@@ -6,6 +6,13 @@
 
 It's a good idea to set the file system on the SD card to readonly to protect it from becoming corrupted if the Raspberry Pi loses power. This is a good guide: https://hallard.me/raspberry-pi-read-only/
 
+### Software and Libraries
+
+```bash
+sudo pip install Adafruit-GPIO Adafruit-MCP3008 Adafruit-PCA9685
+sudo apt-get install screen i2c-tools joystick python-pygame python-serial python-bluetooth pi-bluetooth bluez-utils
+```
+
 ### Startup Script
 
 Add the following lines to `/etc/rc.local`:
