@@ -16,14 +16,14 @@ sudo apt-get autoremove
 Install some software that will be needed:
 ```bash
 sudo pip install adafruit-mcp3008 adafruit-pca9685
-sudo apt-get install screen i2c-tools joystick python-pygame python-serial python-bluetooth pi-bluetooth omxplayer sysstat
+sudo apt-get install screen i2c-tools joystick python-pygame python-serial python-bluetooth pi-bluetooth omxplayer sysstat nmap arp-scan
 ```
 
 ### Startup Script
 
 Add the following lines to `/etc/rc.local`:
 ```bash
-# Set the voltage on pin 23 HIGH so the LED can indicate the pi has booted up.
+# Set the voltage on pin 13 HIGH so the LED can indicate the pi has booted up.
 echo 13 > /sys/class/gpio/export
 echo out > /sys/class/gpio/gpio13/direction
 echo 1 > /sys/class/gpio/gpio13/value

@@ -34,9 +34,10 @@ while running():
         brightness = b
         r2.SetBrightness(brightness)
     
-    if r2.BB8.JustConnected:
-        r2.Sound.Play("Happy")
-    elif r2.BB8.JustDisconnected:
-        r2.Sound.Play("Sad")
+    if r2.Network.Changed("BB8"):
+        if r2.Network.IsConnected("BB8"):
+            r2.Sound.Play("Happy")
+        else:
+            r2.Sound.Play("Sad")
 
 r2.DomeMotorRelay.Disable()

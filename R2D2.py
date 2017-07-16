@@ -5,6 +5,7 @@ import RPi.GPIO as GPIO
 from Relay import *
 from LED import *
 from Sound import *
+from Network import *
 from ACS711EX import ACS711EX
 from VoltageDivider import *
 from LiPo import *
@@ -24,9 +25,10 @@ from Adafruit_MCP3008 import MCP3008
 class R2D2:
     def __init__(self):
         logging.basicConfig(format="%(levelname)s (%(asctime)s): %(message)s", datefmt="%I:%M:%S %p", level=logging.DEBUG)
+        GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BCM)
         atexit.register(self.Exit)
-        self.MCP3008 = MCP3008(spi=SPI.SpiDev(0, 0))#clk=24, cs=27, miso=25, mosi=26)
+        self.MCP3008 = MCP3008(spi=SPI.SpiDev(0, 0))
         self.Voltage = VoltageDivider(self.MCP3008, 0, 984.0, 101.0)
         self.Current = ACS711EX(self.MCP3008, 1)
         self.BrightnessControl = Potentiometer(self.MCP3008, 2)
@@ -45,7 +47,7 @@ class R2D2:
         self.Relay11 = Relay(26)
         self.Relay12 = Relay(27)
 
-        self.BB8 = BB8()
+        self.Network = Network()
         
         self.Head = HeadMotor(self.DomeMotorRelay)
         self.Sound = Sound()

@@ -16,7 +16,6 @@ for proc in procs:
         if pid != os.getpid():
             os.system("sudo kill " + str(pid))
             time.sleep(1)
-            #os.system("while ps -p " + str(pid) + "; do sleep 1; done;")
 
 r2 = R2D2()
 
@@ -27,7 +26,7 @@ def handler(signal, frame):
 signal.signal(signal.SIGTERM, handler)
 
 def running():
-    r2.BB8.Update()
+    r2.Network.Update()
     r2.MagicPanel.Ping()
     r2.Head.Ping()
     r2.StatusDisplay.Update()
@@ -53,8 +52,6 @@ r2.Relay9.Disable()
 r2.Relay10.Disable()
 r2.Relay11.Disable()
 r2.Relay12.Disable()
-
-#r2.DomeLightsRelay.Enable()
 
 clock = pygame.time.Clock()
 while running():

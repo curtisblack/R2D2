@@ -36,24 +36,24 @@ class StatusDisplay(LCD):
 
         t = time.time()
 
-        if t > self.lastLine1UpdateTime + 1 or self.R2D2.BB8.JustConnected or self.R2D2.BB8.JustDisconnected:
-            try:
-                #if re.match("\d+\.\d+\.\d+\.\d+", self.lastIP):
-                #    ip = os.popen("iwgetid -r").read()
-                #    ip = ip[0:len(ip) - 1]
-                #else:
-                    ip = os.popen("ip addr show wlan0").read().split("inet ")[1].split("/")[0]# + " " + os.popen("iwgetid -r").read()
-            except:
-                try:
-                    ip = os.popen("ip addr show eth0").read().split("inet ")[1].split("/")[0]
-                except:
-                    ip = "No Network"
-            if ip != self.lastIP or self.R2D2.BB8.JustConnected or self.R2D2.BB8.JustDisconnected:
-                line1 = "\6 " + ip
-                if self.R2D2.BB8.Connected:
+        if self.R2D2.Network.IP != self.lastIP or self.R2D2.Network.Changed("BB8"):# t > self.lastLine1UpdateTime + 1 or self.R2D2.BB8.JustConnected or self.R2D2.BB8.JustDisconnected:
+            #try:
+            #    #if re.match("\d+\.\d+\.\d+\.\d+", self.lastIP):
+            #    #    ip = os.popen("iwgetid -r").read()
+            #    #    ip = ip[0:len(ip) - 1]
+            #    #else:
+            #        ip = os.popen("ip addr show wlan0").read().split("inet ")[1].split("/")[0]# + " " + os.popen("iwgetid -r").read()
+            #except IndexError:
+            #    try:
+            #        ip = os.popen("ip addr show eth0").read().split("inet ")[1].split("/")[0]
+            #    except IndexError:
+            #        ip = "No Network"
+            #if ip != self.lastIP or self.R2D2.BB8.JustConnected or self.R2D2.BB8.JustDisconnected:
+                line1 = "\6 " + (self.R2D2.Network.IP if self.R2D2.Network.IP != None else "No Network")
+                if self.R2D2.Network.IsConnected("BB8"):#.Connected:
                     line1 = line1.ljust(19, ' ') + '\3'
                 self.SetText(1, line1)
-                self.lastIP = ip
+                self.lastIP = self.R2D2.Network.IP
                 self.lastLine1UpdateTime = t
 
         if t > self.lastLine2UpdateTime + 1:
