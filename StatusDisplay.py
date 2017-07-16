@@ -88,6 +88,14 @@ class StatusDisplay(LCD):
                 self.lastBrightness = b
                 self.lastLine3UpdateTime = t
 
+        if t > self.lastLine4UpdateTime + 1:
+            #cpu = os.popen("top -bn1 | tail -n +8 | awk '{printf \"%.1f\\n\", $(NF-3)}' | awk '{ SUM += $1 } END { printf \"%.0f\", SUM }'").read() + "%"
+            cpu = os.popen("top -bn1 | tail -n +8 | awk '{ SUM += $(NF-3) } END { printf \"%.0f%%\", SUM }'").read()
+            mem = os.popen("free -m | awk 'NR==2{printf \"%.0f%%\", $3*100/$2 }'").read()
+            disk = os.popen("df -h | awk '$NF==\"/\"{printf \"%s\", $5}'").read()
+            line4 = "C " + cpu + " M " + mem + " D " + disk
+            self.SetText(4, line4)
+            self.lastLine4UpdateTime = t
         #h = self.R2D2.Battery.TimeRemaining()
         #h = percent * self.R2D2.Battery.capacity / (A * 100.0)
         #line3 = str(int(h)) + ":" + str(int(60 * (h - int(h)))).rjust(2, "0")

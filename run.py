@@ -5,6 +5,7 @@ import sys
 import time
 import fcntl
 import signal
+import pygame
 import traceback
 from R2D2 import R2D2
 
@@ -40,19 +41,21 @@ running()
 for script in sys.argv[1:]:
     run(script)
 
-while True:
-    r2.Relay1.Disable()
-    r2.Relay2.Disable()
-    r2.Relay3.Disable()
-    r2.Relay4.Disable()
-    r2.Relay5.Disable()
-    r2.Relay6.Disable()
-    r2.Relay7.Disable()
-    r2.Relay8.Disable()
-    r2.Relay9.Disable()
-    r2.Relay10.Disable()
-    r2.Relay11.Disable()
-    r2.Relay12.Disable()
-    r2.StatusDisplay.SetText(4, "")
-    running()
+r2.Relay1.Disable()
+r2.Relay2.Disable()
+r2.Relay3.Disable()
+r2.Relay4.Disable()
+r2.Relay5.Disable()
+r2.Relay6.Disable()
+r2.Relay7.Disable()
+r2.Relay8.Disable()
+r2.Relay9.Disable()
+r2.Relay10.Disable()
+r2.Relay11.Disable()
+r2.Relay12.Disable()
 
+#r2.DomeLightsRelay.Enable()
+
+clock = pygame.time.Clock()
+while running():
+    clock.tick(50)

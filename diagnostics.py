@@ -105,16 +105,16 @@ def DomeLights(brightness):
     s = "Measuring dome lights current (fuse 3) at brightness = " + str(brightness)
     print s
     print "-" * len(s)
-    if not r2.DomeLights.Enabled:
-        r2.DomeLights.Enable()
+    if not r2.DomeLightsRelay.Enabled:
+        r2.DomeLightsRelay.Enable()
         time.sleep(2)
-    if brightness > 0:
-        r2.Head.SetDefault()
-        r2.Head.LifeFormScanner.SetOn()
-        r2.Head.MagicPanel.SetOn()
-        r2.Head.SetBrightness(brightness)
-    else:
-        r2.Head.SetOff()
+    if brightness >= 0:
+        #r2.Head.SetDefault()
+        r2.LifeFormScanner.SetOn()
+        r2.MagicPanel.SetOn()
+        r2.SetBrightness(brightness, limit=False)
+    #else:
+    #    r2.Head.SetOff()
     time.sleep(0.1)
     IdomeLights = MeasureCurrent()
     IdomeLights = (IdomeLights[0] - Iidle[0], IdomeLights[1] - Iidle[0])
@@ -124,23 +124,23 @@ def DomeLights(brightness):
 IdomeLightsMin = DomeLights(0)
 IdomeLightsDefault = DomeLights(10)
 IdomeLightsMax = DomeLights(255)
-r2.DomeLights.Disable()
+r2.DomeLightsRelay.Disable()
 
 print
 print "Measuring dome motor current (fuse 2)"
 print "-------------------------------------"
-r2.DomeMotor.Enable()
+r2.DomeMotorRelay.Enable()
 time.sleep(0.2)
-r2.Head.Motor.Enable()
+r2.Head.Enable()
 time.sleep(1)
-r2.Head.Motor.SetSpeed(255)
+r2.Head.SetSpeed(255)
 IdomeMotor = MeasureCurrent()#(5, 10)
 IdomeMotor = (IdomeMotor[0] - Iidle[0], IdomeMotor[1] - Iidle[0])
-r2.Head.Motor.SetSpeed(127)
+r2.Head.SetSpeed(127)
 time.sleep(1)
-r2.Head.Motor.SetPosition(0)
+r2.Head.SetPosition(0)
 time.sleep(5)
-r2.DomeMotor.Disable()
+r2.DomeMotorRelay.Disable()
 PrintPower(IdomeMotor[0], IdomeMotor[1], 2)
 
 print

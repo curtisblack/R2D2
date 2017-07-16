@@ -16,7 +16,7 @@ sudo apt-get autoremove
 Install some software that will be needed:
 ```bash
 sudo pip install adafruit-mcp3008 adafruit-pca9685
-sudo apt-get install screen i2c-tools joystick python-pygame python-serial python-bluetooth pi-bluetooth omxplayer
+sudo apt-get install screen i2c-tools joystick python-pygame python-serial python-bluetooth pi-bluetooth omxplayer sysstat
 ```
 
 ### Startup Script
@@ -24,10 +24,10 @@ sudo apt-get install screen i2c-tools joystick python-pygame python-serial pytho
 Add the following lines to `/etc/rc.local`:
 ```bash
 # Set the voltage on pin 23 HIGH so the LED can indicate the pi has booted up.
-echo 23 > /sys/class/gpio/export
-echo out > /sys/class/gpio/gpio23/direction
-echo 1 > /sys/class/gpio/gpio23/value
+echo 13 > /sys/class/gpio/export
+echo out > /sys/class/gpio/gpio13/direction
+echo 1 > /sys/class/gpio/gpio13/value
 
 # Run the startup script.
-screen -dm -t "r2d2" bash -c "python /home/pi/R2D2/startup.py"
+sudo -u pi bash -c "python /home/pi/R2D2/run.py /home/pi/R2D2/basic.py &"
 ```
