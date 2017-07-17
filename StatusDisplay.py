@@ -36,25 +36,13 @@ class StatusDisplay(LCD):
 
         t = time.time()
 
-        if self.R2D2.Network.IP != self.lastIP or self.R2D2.Network.Changed("BB8"):# t > self.lastLine1UpdateTime + 1 or self.R2D2.BB8.JustConnected or self.R2D2.BB8.JustDisconnected:
-            #try:
-            #    #if re.match("\d+\.\d+\.\d+\.\d+", self.lastIP):
-            #    #    ip = os.popen("iwgetid -r").read()
-            #    #    ip = ip[0:len(ip) - 1]
-            #    #else:
-            #        ip = os.popen("ip addr show wlan0").read().split("inet ")[1].split("/")[0]# + " " + os.popen("iwgetid -r").read()
-            #except IndexError:
-            #    try:
-            #        ip = os.popen("ip addr show eth0").read().split("inet ")[1].split("/")[0]
-            #    except IndexError:
-            #        ip = "No Network"
-            #if ip != self.lastIP or self.R2D2.BB8.JustConnected or self.R2D2.BB8.JustDisconnected:
-                line1 = "\6 " + (self.R2D2.Network.IP if self.R2D2.Network.IP != None else "No Network")
-                if self.R2D2.Network.IsConnected("BB8"):#.Connected:
-                    line1 = line1.ljust(19, ' ') + '\3'
-                self.SetText(1, line1)
-                self.lastIP = self.R2D2.Network.IP
-                self.lastLine1UpdateTime = t
+        if self.R2D2.Network.IP != self.lastIP or self.R2D2.Network.Changed("BB8"):
+            line1 = "\6 " + (self.R2D2.Network.IP if self.R2D2.Network.IP != None else "No Network")
+            if self.R2D2.Network.IsConnected("BB8"):
+                line1 = line1.ljust(19, ' ') + '\3'
+            self.SetText(1, line1)
+            self.lastIP = self.R2D2.Network.IP
+            self.lastLine1UpdateTime = t
 
         if t > self.lastLine2UpdateTime + 1:
             percent = sum(self.percent) / len(self.percent)
@@ -76,14 +64,20 @@ class StatusDisplay(LCD):
             elif c == 5 and c != self.lastBattery: self.CreateChar(0, [0b01110,0b11111,0b11111,0b11111,0b11111,0b11111,0b11111,0b11111])
             self.lastBattery = c
 
-            line2 = "\0 " + str(percent) + "% " + self.format(V) + "V " + self.format(A) + "A"
+            line2 = "\0 " + str(percent) + "%"
+            line2 = line2.ljust(6, ' ')
+            line2 += " " + self.format(V) + "V"
+            line2 = line2.ljust(14, ' ')
+            line2 += self.format(A) + "A"
             self.SetText(2, line2)
             self.lastLine2UpdateTime = t
 
         if t > self.lastLine3UpdateTime + 0.05:
             b = int(round(100 * self.R2D2.BrightnessControl.GetValue()))
             if b != self.lastBrightness:
-                line3 = "\1 " + ("mute" if self.R2D2.Sound.IsMute() else str(self.R2D2.Sound.Volume) + "%") + " \2 " + str(b) + "%"
+                line3 = "\1 " + ("mute" if self.R2D2.Sound.IsMute() else str(self.R2D2.Sound.Volume) + "%")
+                line3 = line3.ljust(6, ' ')
+                line3 += " \2 " + str(b) + "%"
                 self.SetText(3, line3)
                 self.lastBrightness = b
                 self.lastLine3UpdateTime = t
@@ -93,7 +87,11 @@ class StatusDisplay(LCD):
             cpu = os.popen("top -bn1 | tail -n +8 | awk '{ SUM += $(NF-3) } END { printf \"%.0f%%\", SUM }'").read()
             mem = os.popen("free -m | awk 'NR==2{printf \"%.0f%%\", $3*100/$2 }'").read()
             disk = os.popen("df -h | awk '$NF==\"/\"{printf \"%s\", $5}'").read()
-            line4 = "C " + cpu + " M " + mem + " D " + disk
+            line4 = "C " + cpu
+            line4 = line4.ljust(6, ' ')
+            line4 += " M " + mem
+            line4 = line4.ljust(13, ' ')
+            line4 += " D " + disk
             self.SetText(4, line4)
             self.lastLine4UpdateTime = t
         #h = self.R2D2.Battery.TimeRemaining()

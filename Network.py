@@ -18,6 +18,10 @@ class Network:
         self.port = 5000
         atexit.register(self.Exit)
         self.changed = []
+        self.nextPing = 0
+        self.pingTimes = { "R2D2": 0, "BB8": 0 }
+        self.pingInterval = 1
+        self.pingTimeout = 2
 
     def Exit(self):
         for k in self.IPs.keys():
@@ -47,7 +51,7 @@ class Network:
                     self.incoming = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                     self.incoming.bind((self.IP, self.port))
                     broadcast = ".".join(os.popen("ifconfig | grep Bcast").read().split("Bcast:")[1].split(" ")[0].split(".")[:3] + ["0"])
-                    os.popen("sudo arp-scan " + broadcast + "/24 | tail -n +3 | head -n -3 | cut -d'	' -f1 | awk '{ printf \"echo -n hi > /dev/udp/%s/" + str(self.port) + "\\n\", $1 }' | bash")
+                    os.popen("sudo arp-scan " + broadcast + "/24 | tail -n +3 | head -n -3 | cut -d'	' -f1 | awk '{ printf \"echo -n hi > /dev/udp/%s/" + str(self.port) + "\\n\", $1 }' | bash &")
                     #for i in range(1, 255):
                     #    self.outgoing.sendto("hi", ("192.168.0." + str(i), self.port))
                 else:
@@ -68,21 +72,36 @@ class Network:
                         if self.IPs[droid] != address:
                             logging.info("Discovered " + droid)
                             self.IPs[droid] = address
+                            self.pingTimes[droid] = time.time()
                         if data == "hi":
                             self.Send(droid, "hello")
                             self.changed.append(droid)
                         elif data == "hello":
+                            self.pingTimes[droid] = time.time()
                             self.changed.append(droid)
                         elif data == "bye":
-                            logging.info("Lost " + droid)
                             self.IPs[droid] = None
                             self.changed.append(droid)
+                        elif data == "ping":
+                            self.pingTimes[droid] = time.time()
                         else:
                             self.messages[droid].append(data)
                     else:
                         logging.info("Received " + data + " from " + address)
             except socket.error:
                 pass
+
+        t = time.time()
+        if t > self.nextPing:
+            self.nextPing = t + self.pingInterval
+            for droid in self.IPs.keys():
+               self.Send(droid, "ping")
+
+        for droid in self.pingTimes:
+            if t > self.pingTimes[droid] + self.pingTimeout and self.IPs[droid] != None:
+                self.IPs[droid] = None
+                self.changed.append(droid)
+                logging.info("Lost " + droid)
 
     def Receive(self, droid):
         if len(self.messages[droid]) > 0:
