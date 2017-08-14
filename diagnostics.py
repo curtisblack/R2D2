@@ -1,3 +1,4 @@
+import sys
 import time
 import math
 from Wire import *
@@ -13,7 +14,7 @@ def FindFuse(I):
             return f
     return I
 
-# lengths of wires (in metres) from each of the fuses to their final destination
+# lengths of wires (in metres, round trip) from each of the fuses to their final destination
 wireLengths = {
     -1: 1.0, # battery to fuse block
      1: 0.5, # raspberry pi
@@ -22,7 +23,7 @@ wireLengths = {
      4: 0, # body lights
      5: 0, # dome servos
      6: 0, # body servos
-     7: 0, # sound system
+     7: 1.0, # sound system
      8: 0,
      9: 0,
     10: 0,
@@ -30,7 +31,7 @@ wireLengths = {
     12: 0, # right foot motor
 }
 
-r2.StatusDisplay.SetText(4, "Running Diagnostics")
+#r2.StatusDisplay.SetText(4, "Running Diagnostics")
 
 r2.Relay1.Disable()
 r2.Relay2.Disable()
@@ -49,7 +50,7 @@ r2.Relay8.Disable()
 #r2.Relay7.Enable()
 #r2.Relay8.Enable()
 
-def MeasureCurrent(count=10000):
+def MeasureCurrent(count=50000):
     m = 0
     a = 0
     for i in range(count):
@@ -70,7 +71,7 @@ def PrintPower(Iavg, Imax, fuse=0):
     if fuse > 0:
         f = FindFuse(Imax)
         print "Fuse {:} should be at least {:} A".format(fuse, f)
-        print "Wire from fuse {:} should be at least {:}".format(fuse, CalculateWireSize(V, f, wireLengths[fuse]))
+        print "Wire from fuse {:} should be at least {:}".format(fuse, CalculateWireSize(V, f, wireLengths[fuse], loss=3))
     elif fuse == -1:
         print "Wire from battery to fuse block should be at lease {:}".format(CalculateWireSize(V, Imax, wireLengths[fuse]))
     print "Average power {:.2f} W".format(Iavg * V)
@@ -110,7 +111,7 @@ def DomeLights(brightness):
         time.sleep(2)
     if brightness >= 0:
         #r2.Head.SetDefault()
-        r2.LifeFormScanner.SetOn()
+        #r2.LifeFormScanner.SetOn()
         r2.MagicPanel.SetOn()
         r2.SetBrightness(brightness, limit=False)
     #else:
@@ -143,9 +144,23 @@ time.sleep(5)
 r2.DomeMotorRelay.Disable()
 PrintPower(IdomeMotor[0], IdomeMotor[1], 2)
 
+print 
+print "Measuring amplifier current (fuse 7)"
+print "===================================="
+r2.SoundRelay.Enable()
+r2.Sound.PlayFile("startup.mp3")
+time.sleep(0.2)
+Isound = MeasureCurrent(180000)
+Isound = (Isound[0] - Iidle[0], Isound[1] - Iidle[0])
+r2.SoundRelay.Disable()
+PrintPower(Isound[0], Isound[1], 7)
+
+
 print
 print "Calculating total current"
 print "-------------------------"
-Itotal = Iidle[0] + IdomeLightsDefault[0] + IdomeMotor[0]
-Imax = Iidle[1] + IdomeLightsMax[1] + IdomeMotor[1]
+Itotal = Iidle[0] + IdomeLightsDefault[0] + IdomeMotor[0] + Isound[0]
+Imax = Iidle[1] + IdomeLightsMax[1] + IdomeMotor[1] + Isound[1]
 PrintPower(Itotal, Imax, -1)
+
+sys.exit(0)

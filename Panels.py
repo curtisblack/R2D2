@@ -1,5 +1,4 @@
 import math
-import time
 import logging
 from Adafruit_PCA9685 import *
 
@@ -10,6 +9,7 @@ class Panel:
         self.minimum = minimum
         self.maximum = maximum
         self.state = 0
+        self.target = 0
 
     def SetState(self, state):
         state = min(max(float(state), 0.0), 1.0)
@@ -20,26 +20,27 @@ class Panel:
             logging.warning("I2C communication error in Panel.SetState")
 
     def Open(self):
-        self.SetState(0)
+        self.SetTarget(1)
 
     def Close(self):
-        self.SetState(1)
+        self.SetTarget(0)
 
     def IsOpen(self):
-        return self.state == 0
+        return self.state == 1
 
     def IsClosed(self):
-        return self.state == 1
+        return self.state == 0
 
 class Panels:
     def __init__(self, address=64):
         try:
             self.pwm = PCA9685(address)
-            self.pwm.set_pwm_freq(60)
+            self.pwm.set_pwm_freq(50)
         except IOError:
             logging.warning("I2C communication error in Panels.__init__")
-        self.panels = [Panel(self, i, 180, 620) for i in range(13)]
+        #self.panels = [Panel(self, i, 180, 620) for i in range(13)]
         if address == 64: # head panels
+            self.panels = [Panel(self, i, 180, 620) for i in range(13)]
             self.Top = self.panels[0]
             self.Panel1 = self.panels[1]
             self.Panel2 = self.panels[2]
@@ -59,3 +60,4 @@ class Panels:
 
     def __len__(self):
         return len(self.panels)
+

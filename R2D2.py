@@ -18,13 +18,14 @@ from MagicPanel import *
 from LifeFormScanner import *
 from Panels import *
 from HeadMotor import *
+from Maestro import *
 from BB8 import *
 import Adafruit_GPIO.SPI as SPI
 from Adafruit_MCP3008 import MCP3008
 
 class R2D2:
     def __init__(self):
-        logging.basicConfig(format="%(levelname)s (%(asctime)s): %(message)s", datefmt="%I:%M:%S %p", level=logging.DEBUG)
+        logging.basicConfig(format="%(levelname)s (%(asctime)s): %(message)s", datefmt="%I:%M:%S %p", level=logging.WARNING)
         GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BCM)
         atexit.register(self.Exit)
@@ -41,7 +42,7 @@ class R2D2:
         self.DomeMotorRelay = self.Relay5 = Relay(20)
         self.BodyLightsRelay = self.Relay6 = Relay(21)
         self.BodyServosRelay = self.Relay7 = Relay(22)
-        self.Relay8 = Relay(23)
+        self.SoundRelay = self.Relay8 = Relay(23)
         self.Relay9 = Relay(24)
         self.Relay10 = Relay(25)
         self.Relay11 = Relay(26)
@@ -62,6 +63,10 @@ class R2D2:
         self.MagicPanel = MagicPanel(self.DomeLightsRelay)
         self.LifeFormScanner = LifeFormScanner(self.DomeLightsRelay)
         self.DomePanels = Panels()
+        
+        self.BodyServos = Maestro()
+        self.LeftUtilityArm = MaestroServo(self.BodyServos, 0, 2390, 1520, 10, 1.5)
+        self.RightUtilityArm = MaestroServo(self.BodyServos, 1, 2390, 1520, 10, 1.5)
 
     def Exit(self):
         self.Relay1.Disable()
@@ -78,6 +83,7 @@ class R2D2:
         self.Relay12.Disable()
         self.StatusDisplay.SetBacklight(False)
         self.StatusDisplay.Clear()
+        self.BodyServos.Close()
         GPIO.cleanup()
 
     def SetBrightness(self, brightness, limit = True):

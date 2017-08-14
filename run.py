@@ -30,15 +30,18 @@ def running():
     r2.MagicPanel.Ping()
     r2.Head.Ping()
     r2.StatusDisplay.Update()
+    r2.BodyServos.Update()
     return True
 
 def run(script):
-    exec(open(os.path.realpath(script)).read(), { "running": running, "r2": r2 })
+    exec(open(os.path.realpath(script)).read(), { "running": running, "r2": r2, "args": sys.argv[2:] })
 
 running()
 
-for script in sys.argv[1:]:
-    run(script)
+if len(sys.argv) > 1:
+    run(sys.argv[1])
+#for script in sys.argv[1:]:
+#    run(script)
 
 r2.Relay1.Disable()
 r2.Relay2.Disable()
