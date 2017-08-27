@@ -7,7 +7,7 @@ class Sound(object):
         self.directory = "/home/pi/R2D2/Sounds"
         self.device = "PCM"
         mixer.init()
-        self.Volume = 10
+        self.Volume = 3
 
     #@property
     def get_Volume(self):

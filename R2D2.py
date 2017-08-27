@@ -25,7 +25,7 @@ from Adafruit_MCP3008 import MCP3008
 
 class R2D2:
     def __init__(self):
-        logging.basicConfig(format="%(levelname)s (%(asctime)s): %(message)s", datefmt="%I:%M:%S %p", level=logging.WARNING)
+        logging.basicConfig(format="%(levelname)s (%(asctime)s): %(message)s", datefmt="%I:%M:%S %p", level=logging.INFO)
         GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BCM)
         atexit.register(self.Exit)
@@ -37,12 +37,12 @@ class R2D2:
         
         self.DomeLightsRelay = self.Relay1 = Relay(16)
         self.DomeServosRelay = self.Relay2 = Relay(17)
-        self.Relay3 = Relay(18)
+        self.DomeMotorRelay = self.Relay3 = Relay(18)
         self.Relay4 = Relay(19)
-        self.DomeMotorRelay = self.Relay5 = Relay(20)
-        self.BodyLightsRelay = self.Relay6 = Relay(21)
-        self.BodyServosRelay = self.Relay7 = Relay(22)
-        self.SoundRelay = self.Relay8 = Relay(23)
+        self.BodyLightsRelay = self.Relay5 = Relay(20)
+        self.BodyServosRelay = self.Relay6 = Relay(21)
+        self.SoundRelay = self.Relay7 = Relay(22)
+        self.Relay8 = Relay(23)
         self.Relay9 = Relay(24)
         self.Relay10 = Relay(25)
         self.Relay11 = Relay(26)
@@ -53,6 +53,7 @@ class R2D2:
         self.Head = HeadMotor(self.DomeMotorRelay)
         self.Sound = Sound()
         self.StatusDisplay = StatusDisplay(self)
+
         self.FrontLogicDisplay = FrontLogicDisplay(self.DomeLightsRelay)
         self.RearLogicDisplay = RearLogicDisplay(self.DomeLightsRelay)
         self.FrontProcessStateIndicator = FrontProcessStateIndicator(self.DomeLightsRelay)
@@ -65,8 +66,8 @@ class R2D2:
         self.DomePanels = Panels()
         
         self.BodyServos = Maestro()
-        self.LeftUtilityArm = MaestroServo(self.BodyServos, 0, 2390, 1520, 10, 1.5)
-        self.RightUtilityArm = MaestroServo(self.BodyServos, 1, 2390, 1520, 10, 1.5)
+        self.LeftUtilityArm = MaestroServo(self.BodyServos, 16, 2390, 1520, 20, 1)
+        self.RightUtilityArm = MaestroServo(self.BodyServos, 17, 2390, 1520, 20, 1)
 
     def Exit(self):
         self.Relay1.Disable()
