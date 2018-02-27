@@ -25,7 +25,7 @@ from Adafruit_MCP3008 import MCP3008
 
 class R2D2:
     def __init__(self):
-        logging.basicConfig(format="%(levelname)s (%(asctime)s): %(message)s", datefmt="%I:%M:%S %p", level=logging.INFO)
+        logging.basicConfig(format="%(levelname)s (%(asctime)s): %(message)s", datefmt="%I:%M:%S %p", level=logging.INFO, filename="/var/tmp/R2D2.log")        
         GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BCM)
         atexit.register(self.Exit)

@@ -74,9 +74,9 @@ class Network:
                     #print "MAC", mac
                     if mac in self.MACs:
                         droid = self.MACs[mac]
-                        logging.info("Received " + data + " from " + droid)
+                        logging.info("Received " + data + " from " + droid + " (" + address + ")")
                         if self.IPs[droid] != address:
-                            logging.info("Discovered " + droid)
+                            logging.info("Discovered " + droid + " at " + address)
                             self.IPs[droid] = address
                             self.pingTimes[droid] = time.time()
                         if data == "hi":
