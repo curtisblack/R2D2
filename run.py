@@ -25,12 +25,18 @@ def handler(signal, frame):
 
 signal.signal(signal.SIGTERM, handler)
 
+lastUpdate = 0
+
 def running():
-    r2.Network.Update()
-    r2.MagicPanel.Ping()
-    r2.Head.Ping()
-    r2.StatusDisplay.Update()
-    r2.BodyServos.Update()
+    t = time.time()
+    global lastUpdate
+    if t - lastUpdate > 0.1:
+        r2.Network.Update()
+        r2.MagicPanel.Ping()
+        r2.Head.Ping()
+        r2.StatusDisplay.Update()
+        r2.BodyServos.Update()
+        lastUpdate = t
     return True
 
 def run(script):

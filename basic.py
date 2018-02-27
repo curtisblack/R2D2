@@ -1,8 +1,6 @@
 import time
 import random
 
-#r2.StatusDisplay.SetText(4, "Demo Script")
-
 r2.DomeLightsRelay.Enable()
 r2.DomeMotorRelay.Enable()
 if not "-mute" in args:

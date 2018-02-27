@@ -7,6 +7,7 @@ import atexit
 class Network:
     def __init__(self):
         self.IP = None
+        self.SSID = None
         self.lastUpdateTime = time.time()
         self.incoming = None
         self.MACs = { "b8:27:eb:fa:26:48": "BB8",
@@ -35,15 +36,20 @@ class Network:
 
         if t > self.lastUpdateTime + 1:
             ip = None
+            ssid = None
             try:
                 ip = os.popen("ip addr show wlan0").read().split("inet ")[1].split("/")[0]
+                ssid = os.popen("iwconfig wlan0").read().split('SSID:"')[1].split('"')[0]
             except IndexError:
                 try:
                     ip = os.popen("ip addr show eth0").read().split("inet ")[1].split("/")[0]
+                    ssid = "Ethernet"
                 except IndexError:
                     ip = None
-            if self.IP != ip:
+                    ssid = None
+            if self.IP != ip or self.SSID != ssid:
                 self.IP = ip
+                self.SSID = ssid
                 if self.incoming != None:
                     self.incoming.close()
                 if self.IP != None:

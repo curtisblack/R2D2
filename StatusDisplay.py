@@ -15,7 +15,7 @@ class StatusDisplay(LCD):
         self.CreateChar(7, [0b01010,0b01010,0b11111,0b10001,0b10001,0b01110,0b00100,0b00100]) # power plug
         self.lastBattery = -1
         self.lastBrightness = -1
-        self.lastIP = ""
+        self.showIP = True
         self.percent = []
         self.V = []
         self.A = []
@@ -36,12 +36,13 @@ class StatusDisplay(LCD):
 
         t = time.time()
 
-        if self.R2D2.Network.IP != self.lastIP or self.R2D2.Network.Changed("BB8"):
-            line1 = "\6 " + (self.R2D2.Network.IP if self.R2D2.Network.IP != None else "No Network")
+        if t > self.lastLine1UpdateTime + 2:
+            text = self.R2D2.Network.IP if self.showIP else self.R2D2.Network.SSID
+            self.showIP = not self.showIP
+            line1 = "\6 " + (text if text != None else "No Network")
             if self.R2D2.Network.IsConnected("BB8"):
                 line1 = line1.ljust(19, ' ') + '\3'
             self.SetText(1, line1)
-            self.lastIP = self.R2D2.Network.IP
             self.lastLine1UpdateTime = t
 
         if t > self.lastLine2UpdateTime + 1:
