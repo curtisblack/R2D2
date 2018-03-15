@@ -6,9 +6,10 @@ class VoltageDivider:
         self.channel = channel
         self.R1 = float(R1)
         self.R2 = float(R2)
-        logging.info("Voltage divider on analog input {:} has maximum sensor voltage {:.2f} V".format(self.channel, 3.35 * (self.R1 + self.R2) / self.R2))
+        self.Vcc = 3.3
+        logging.info("Voltage divider on analog input {:} has maximum sensor voltage {:.2f} V".format(self.channel, self.Vcc * (self.R1 + self.R2) / self.R2))
 
     def GetVoltage(self):
-        V = 3.35 * self.MCP3008.read_adc(self.channel) / 1023.0
+        V = self.Vcc * self.MCP3008.read_adc(self.channel) / 1023.0
         return V * (self.R1 + self.R2) / self.R2
 

@@ -3,8 +3,10 @@ import time
 import math
 from Wire import *
 
+tests = sys.argv[2:]
+
 # Ah ratings of batteries
-batteries = [2.2, 20]
+batteries = [20]
 
 # current ratings of fuses
 fuses = [2, 3, 5, 7.5, 10, 15, 20, 25, 30, 35]
@@ -18,13 +20,13 @@ def FindFuse(I):
 wireLengths = {
     -1: 1.0, # battery to fuse block
      1: 0.5, # raspberry pi
-     2: 1.0, # dome motor
+     2: 0,
      3: 3.0, # dome lights
      4: 0, # body lights
      5: 0, # dome servos
      6: 0, # body servos
-     7: 1.0, # sound system
-     8: 0,
+     7: 1.0, # dome motor
+     8: 1.0, # sound system
      9: 0,
     10: 0,
     11: 0, # left foot motor
@@ -113,6 +115,9 @@ def DomeLights(brightness):
         #r2.Head.SetDefault()
         #r2.LifeFormScanner.SetOn()
         r2.MagicPanel.SetOn()
+        r2.FrontHoloProjector.SetOn()
+        r2.RearHoloProjector.SetOn()
+        r2.TopHoloProjector.SetOn()
         r2.SetBrightness(brightness, limit=False)
     #else:
     #    r2.Head.SetOff()
@@ -122,38 +127,46 @@ def DomeLights(brightness):
     PrintPower(IdomeLights[0], IdomeLights[1], 3)
     return IdomeLights
 
-IdomeLightsMin = DomeLights(0)
-IdomeLightsDefault = DomeLights(10)
-IdomeLightsMax = DomeLights(255)
-r2.DomeLightsRelay.Disable()
+IdomeLightsDefault = (0, 0)
+IdomeLightsMax = (0, 0)
+if len(tests) == 0 or "3" in tests:
+    IdomeLightsMin = DomeLights(0)
+    IdomeLightsDefault = DomeLights(10)
+    IdomeLightsMax = DomeLights(255)
+    r2.DomeLightsRelay.Disable()
 
-print
-print "Measuring dome motor current (fuse 2)"
-print "-------------------------------------"
-r2.DomeMotorRelay.Enable()
-time.sleep(0.2)
-r2.Head.Enable()
-time.sleep(1)
-r2.Head.SetSpeed(255)
-IdomeMotor = MeasureCurrent()#(5, 10)
-IdomeMotor = (IdomeMotor[0] - Iidle[0], IdomeMotor[1] - Iidle[0])
-r2.Head.SetSpeed(127)
-time.sleep(1)
-r2.Head.SetPosition(0)
-time.sleep(5)
-r2.DomeMotorRelay.Disable()
-PrintPower(IdomeMotor[0], IdomeMotor[1], 2)
+IdomeMotor = (0, 0)
+if len(tests) == 0 or "7" in tests:
+    print
+    print "Measuring dome motor current (fuse 7)"
+    print "-------------------------------------"
+    r2.DomeMotorRelay.Enable()
+    time.sleep(0.2)
+    r2.Head.SetRequirePing(False)
+    r2.Head.Enable()
+    time.sleep(1)
+    r2.Head.SetSpeed(255)
+    time.sleep(1)
+    IdomeMotor = MeasureCurrent()#(5, 10)
+    IdomeMotor = (IdomeMotor[0] - Iidle[0], IdomeMotor[1] - Iidle[0])
+    r2.Head.SetSpeed(127)
+    time.sleep(1)
+    r2.DomeMotorRelay.Disable()
+    r2.Head.SetRequirePing(True)
+    PrintPower(IdomeMotor[0], IdomeMotor[1], 7)
 
-print 
-print "Measuring amplifier current (fuse 7)"
-print "===================================="
-r2.SoundRelay.Enable()
-r2.Sound.PlayFile("startup.mp3")
-time.sleep(0.2)
-Isound = MeasureCurrent(180000)
-Isound = (Isound[0] - Iidle[0], Isound[1] - Iidle[0])
-r2.SoundRelay.Disable()
-PrintPower(Isound[0], Isound[1], 7)
+Isound = (0, 0)
+if len(tests) == 0 or "8" in tests:
+    print 
+    print "Measuring amplifier current (fuse 8)"
+    print "===================================="
+    r2.SoundRelay.Enable()
+    r2.Sound.PlayFile("startup.mp3")
+    time.sleep(0.2)
+    Isound = MeasureCurrent(180000)
+    Isound = (Isound[0] - Iidle[0], Isound[1] - Iidle[0])
+    r2.SoundRelay.Disable()
+    PrintPower(Isound[0], Isound[1], 8)
 
 
 print

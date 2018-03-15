@@ -17,6 +17,11 @@ r2.RightUtilityArm.SetTarget(0)
 
 nextHeadMove = time.time() + 10
 nextSound = time.time()
+nextHologram = time.time()
+hologramOff = time.time() + 1e6
+
+r2.FrontHoloProjector.SetBrightness(10)
+r2.RearHoloProjector.SetBrightness(10)
 
 #brightness = -2
 
@@ -29,6 +34,15 @@ while running():
         s = random.randint(0, 1)
         r2.LeftUtilityArm.SetTarget(s)
         r2.RightUtilityArm.SetTarget(s)
+
+    if t > nextHologram:
+        nextHologram = t + random.randint(60, 180)
+        hologramOff = t + 30
+        r2.FrontHoloProjector.SetMessage()
+        #r2.Sound.Play("")
+    elif t > hologramOff:
+        r2.FrontHoloProjector.SetDefault()
+        hologramOff = t + 1e6
 
     #print r2.BodyServos.GetPosition(0), r2.BodyServos.GetPosition(1)
     

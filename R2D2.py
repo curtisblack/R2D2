@@ -33,7 +33,7 @@ class R2D2:
         self.Voltage = VoltageDivider(self.MCP3008, 0, 984.0, 101.0)
         self.Current = ACS711EX(self.MCP3008, 1)
         self.BrightnessControl = Potentiometer(self.MCP3008, 2)
-        self.Battery = LiPo(self.Voltage, self.Current, 3, 2.2)
+        self.Battery = LiPo(self.Voltage, self.Current, 6, 10)
         
         self.DomeLightsRelay = self.Relay1 = Relay(16)
         self.DomeServosRelay = self.Relay2 = Relay(17)

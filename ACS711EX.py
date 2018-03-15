@@ -4,5 +4,5 @@ class ACS711EX:
         self.channel = channel
 
     def GetCurrent(self):
-        return abs(36.7 * self.MCP3008.read_adc(self.channel) / 1023.0 - 18.3)
+        return abs(36.7 * self.MCP3008.read_adc(self.channel) / 1023.0 - 18.35)
 
