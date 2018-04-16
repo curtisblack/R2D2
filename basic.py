@@ -20,20 +20,31 @@ nextSound = time.time()
 nextHologram = time.time()
 hologramOff = time.time() + 1e6
 
-r2.FrontHoloProjector.SetBrightness(10)
-r2.RearHoloProjector.SetBrightness(10)
+class HeadMove:
+    def __init__(self, head):
+        self.Head = head
+        self.NextMoveTime = 0
 
-#brightness = -2
+    def Update(self):
+        t = time.time()
+        if t > self.NextMoveTime:
+            self.Head.SetPosition(random.randint(-90, 90))
+            self.NextMoveTime = t + random.randint(1, 10)
+
+scripts = []
+
+scripts.append(HeadMove(r2.Head))
+
+from HoloProjector import *
+scripts.append(TwitchHoloProjector(r2.FrontHoloProjector))
+scripts.append(TwitchHoloProjector(r2.TopHoloProjector))
+scripts.append(TwitchHoloProjector(r2.RearHoloProjector))
 
 while running():
     t = time.time()
-    
-    if t > nextHeadMove:
-        nextHeadMove = t + random.randint(1, 10)
-        r2.Head.SetPosition(random.randint(-90, 90))
-        s = random.randint(0, 1)
-        r2.LeftUtilityArm.SetTarget(s)
-        r2.RightUtilityArm.SetTarget(s)
+
+    for script in scripts:
+        script.Update()
 
     if t > nextHologram:
         nextHologram = t + random.randint(60, 180)
@@ -43,17 +54,10 @@ while running():
     elif t > hologramOff:
         r2.FrontHoloProjector.SetDefault()
         hologramOff = t + 1e6
-
-    #print r2.BodyServos.GetPosition(0), r2.BodyServos.GetPosition(1)
     
     if t > nextSound:
         nextSound = t + random.randint(10, 20)
         r2.Sound.Play("Generic")
-    
-    #b = int(round(255 * r2.BrightnessControl.GetValue()))
-    #if brightness != b:
-    #    brightness = b
-    #    r2.SetBrightness(brightness)
     
     if r2.Network.Changed("BB8"):
         if r2.Network.IsConnected("BB8"):

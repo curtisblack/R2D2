@@ -65,7 +65,7 @@ class R2D2:
         self.LifeFormScanner = LifeFormScanner(self.DomeLightsRelay)
         self.DomePanels = Panels()
         
-        self.BodyServos = Maestro()
+        self.BodyServos = Maestro("00126418")
         self.LeftUtilityArm = MaestroServo(self.BodyServos, 16, 2390, 1520, 20, 1)
         self.RightUtilityArm = MaestroServo(self.BodyServos, 17, 2390, 1520, 20, 1)
 

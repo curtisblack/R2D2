@@ -9,13 +9,14 @@ import pygame
 import traceback
 from R2D2 import R2D2
 
-procs = os.popen("sudo ps ax | grep python").read().split("\n")
-for proc in procs:
-    if "run.py" in proc:
-        pid = int(proc.lstrip(" ").split(" ")[0])
-        if pid != os.getpid():
-            os.system("sudo kill " + str(pid))
-            time.sleep(1)
+def KillCurrent():
+    procs = os.popen("sudo ps ax | grep python").read().split("\n")
+    for proc in procs:
+        if "run.py" in proc:
+            pid = int(proc.lstrip(" ").split(" ")[0])
+            if pid != os.getpid():
+                os.system("sudo kill " + str(pid))
+                time.sleep(1)
 
 r2 = R2D2()
 

@@ -7,18 +7,18 @@ class Sound(object):
         self.directory = "/home/pi/R2D2/Sounds"
         self.device = "PCM"
         mixer.init()
-        self.Volume = 10
+        self.Volume = 20
 
     #@property
     def get_Volume(self):
         try:
-            return int(os.popen("amixer sget " + self.device).read().split("[")[1].split("%")[0])
+            return 2 * int(os.popen("amixer sget " + self.device).read().split("[")[1].split("%")[0])
         except IndexError:
             return 0
 
     #@Volume.setter
     def set_Volume(self, value):
-        volume = max(0, min(100, value))
+        volume = max(0, min(100, value)) / 2
         os.system("amixer set " + self.device + " " + str(volume) + "% > /dev/null")
 
     Volume = property(get_Volume, set_Volume)

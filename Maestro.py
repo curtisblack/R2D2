@@ -5,7 +5,8 @@ import glob
 import logging
 
 class Maestro:
-    def __init__(self, port="/dev/ttyACM0", resetPin=255, deviceNumber=255, CRCEnabled=False):
+    def __init__(self, serial, resetPin=255, deviceNumber=255, CRCEnabled=False):
+        self.serial = serial
         self.resetPin = resetPin
         self.deviceNumber = deviceNumber
         self.targets = {}
@@ -18,18 +19,21 @@ class Maestro:
 
     def begin(self):
         self.Close()
-        try:
-            device = sorted(glob.glob("/dev/ttyACM*"))[0]
-            logging.info("Using Maestro servo controller on " + device + " for body servos.")
-            self.stream = os.open(device, os.O_RDWR | os.O_NOCTTY)
-            options = termios.tcgetattr(self.stream)
-            options[0] &= ~(termios.INLCR | termios.IGNCR | termios.ICRNL | termios.IXON | termios.IXOFF)
-            options[1] &= ~(termios.ONLCR | termios.OCRNL)
-            options[3] &= ~(termios.ECHO | termios.ECHONL | termios.ICANON | termios.ISIG | termios.IEXTEN)
-            termios.tcsetattr(self.stream, termios.TCSANOW, options)
-        except:
-            self.stream = None
-            logging.warning("Unable to connect to Maestro servo controller")
+        devices = sorted(glob.glob("/dev/serial/by-id/usb*Pololu*Maestro*" + self.serial + "*"))
+        for device in devices:
+            try:
+                logging.info("Using Maestro servo controller on " + device + ".")
+                self.stream = os.open(device, os.O_RDWR | os.O_NOCTTY)
+                options = termios.tcgetattr(self.stream)
+                options[0] &= ~(termios.INLCR | termios.IGNCR | termios.ICRNL | termios.IXON | termios.IXOFF)
+                options[1] &= ~(termios.ONLCR | termios.OCRNL)
+                options[3] &= ~(termios.ECHO | termios.ECHONL | termios.ICANON | termios.ISIG | termios.IEXTEN)
+                termios.tcsetattr(self.stream, termios.TCSANOW, options)
+                print "done"
+                break
+            except:
+                self.stream = None
+                logging.warning("Unable to connect to Maestro servo controller")
 
     def Close(self):
         if self.stream == None:

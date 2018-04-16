@@ -7,6 +7,8 @@ class HeadMotor(I2C):
         self.lastPing = 0
 
     def SetSpeed(self, speed):
+        #speed = speed * speed if speed >= 0 else -speed * speed
+        speed = int(127 + 127 * speed)
         self.Send(6, [speed])
 
     def SetPosition(self, position):
