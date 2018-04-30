@@ -6,7 +6,10 @@ class Sound(object):
     def __init__(self):
         self.directory = "/home/pi/R2D2/Sounds"
         self.device = "PCM"
-        mixer.init()
+        try:
+            mixer.init()
+        except:
+            pass
         self.Volume = 20
 
     #@property

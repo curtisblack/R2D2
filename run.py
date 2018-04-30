@@ -7,6 +7,7 @@ import fcntl
 import signal
 import pygame
 import traceback
+from PerformanceMonitor import *
 from R2D2 import R2D2
 
 def KillCurrent():
@@ -28,14 +29,17 @@ signal.signal(signal.SIGTERM, handler)
 
 lastUpdate = 0
 
+pm = PerformanceMonitor()
+
 def running():
+    pm.Update()
     t = time.time()
     global lastUpdate
     if t - lastUpdate > 0.1:
-        r2.Network.Update()
+        #r2.Network.Update()
         r2.MagicPanel.Ping()
         r2.Head.Ping()
-        r2.StatusDisplay.Update()
+        #r2.StatusDisplay.Update()
         r2.BodyServos.Update()
         lastUpdate = t
     return True

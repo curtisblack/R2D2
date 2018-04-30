@@ -62,7 +62,7 @@ class R2D2:
         self.TopHoloProjector = TopHoloProjector(self.DomeLightsRelay)
         self.RearHoloProjector = RearHoloProjector(self.DomeLightsRelay)
         self.MagicPanel = MagicPanel(self.DomeLightsRelay)
-        self.LifeFormScanner = LifeFormScanner(self.DomeLightsRelay)
+        self.LifeFormScanner = LifeFormScanner(self.DomeServosRelay)
         self.DomePanels = Panels()
         
         self.BodyServos = Maestro("00126418")

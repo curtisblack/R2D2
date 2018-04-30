@@ -5,15 +5,18 @@ import glob
 import logging
 
 class Maestro:
-    def __init__(self, serial, resetPin=255, deviceNumber=255, CRCEnabled=False):
+    def __init__(self, serial, servos=24, resetPin=255, deviceNumber=255, CRCEnabled=False):
         self.serial = serial
         self.resetPin = resetPin
         self.deviceNumber = deviceNumber
+        self.servos = servos
         self.targets = {}
         self.moveStatus = {}
-        for i in range(24):
+        self.registered = {}
+        for i in range(self.servos):
             self.targets[i] = 0
             self.moveStatus[i] = 0
+            self.registered[i] = False
         self.stream = None
         self.begin()
 
@@ -29,7 +32,6 @@ class Maestro:
                 options[1] &= ~(termios.ONLCR | termios.OCRNL)
                 options[3] &= ~(termios.ECHO | termios.ECHONL | termios.ICANON | termios.ISIG | termios.IEXTEN)
                 termios.tcsetattr(self.stream, termios.TCSANOW, options)
-                print "done"
                 break
             except:
                 self.stream = None
@@ -58,6 +60,7 @@ class Maestro:
             self.begin()
         try:
             os.write(self.stream, "".join(map(chr, [0x84, channel, 0, 0])))
+            #os.flush(self.stream)
         except:
             self.Close()
 
@@ -79,6 +82,7 @@ class Maestro:
             self.targets[channel] = target
             target = int(target * 4)
             os.write(self.stream, "".join(map(chr, [0x84, channel, target & 0x7F, (target >> 7) & 0x7F])))
+            #os.flush(self.stream)
         except:
             self.Close()
 
@@ -88,6 +92,7 @@ class Maestro:
         try:
             speed = int(speed * 4)
             os.write(self.stream, "".join(map(chr, [0x87, channel, speed & 0x7F, (speed >> 7) & 0x7F])))
+            #os.flush(self.stream)
         except:
             self.Close()
 
@@ -97,6 +102,7 @@ class Maestro:
         try:
             acceleration = int(acceleration * 4)
             os.write(self.stream, "".join(map(chr, [0x89, channel, acceleration & 0x7F, (acceleration >> 7) & 0x7F])))
+            #os.flush(self.stream)
         except:
             self.Close()
 
@@ -105,6 +111,7 @@ class Maestro:
             self.begin()
         try:
             os.write(self.stream, "".join(map(chr, [0x90, channel])))
+            #os.flush(self.stream)
             r1 = os.read(self.stream, 1)
             r2 = os.read(self.stream, 1)
             return (ord(r1) + 256 * ord(r2)) / 4
@@ -116,15 +123,16 @@ class Maestro:
         if self.stream == None:
             return
         try:
-            for i in range(2):
-                if self.targets[i] != 0 and self.moveStatus[i] < 0:
-                    p = self.GetPosition(i)
-                    if p != 0 and self.targets[i] == p:
-                        self.moveStatus[i] = time.time()
-                elif self.moveStatus[i] > 0:
-                    if self.moveStatus[i] + 0.5 < time.time():
-                        #self.Disable(i)
-                        self.moveStatus[i] = 0
+            for i in range(self.servos):
+                if self.registered[i]:
+                    if self.targets[i] != 0 and self.moveStatus[i] < 0:
+                        p = self.GetPosition(i)
+                        if p != 0 and self.targets[i] == p:
+                            self.moveStatus[i] = time.time()
+                    elif self.moveStatus[i] > 0:
+                        if self.moveStatus[i] + 0.5 < time.time():
+                            #self.Disable(i)
+                            self.moveStatus[i] = 0
         except:
             self.Close()
 
@@ -136,6 +144,7 @@ class MaestroServo:
         self.maximum = maximum
         self.speed = speed
         self.acceleration = acceleration
+        self.maestro.registered[channel] = True
         self.maestro.SetSpeed(channel, speed)
         self.maestro.SetAcceleration(channel, acceleration)
 
@@ -147,9 +156,21 @@ class MaestroServo:
         #self.maestro.SetAcceleration(self.channel, self.acceleration)
         #self.maestro.SetSpeed(self.channel, self.speed)
 
+    def Open(self):
+        self.SetTarget(1)
+
+    def Close(self):
+        self.SetTarget(0)
 
     def Enable(self):
         self.maestro.Enable(self.channel)
 
     def Disable(self):
         self.maestro.Disable(self.channel)
+
+    def Toggle(self):
+        mid = (self.minimum + self.maximum) / 2
+        if self.maestro.targets[self.channel] > mid:
+            self.SetTarget(0)
+        else:
+            self.SetTarget(1)

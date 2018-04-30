@@ -1,8 +1,10 @@
 from I2C import I2C
+import random
 
 class HoloProjector(I2C):
     def __init__(self, address, relay=None):
         I2C.__init__(self, address, relay)
+        self.LightOn = False
 
     def SetBrightness(self, brightness):
         self.Send(10, [brightness])
@@ -12,15 +14,19 @@ class HoloProjector(I2C):
 
     def SetOff(self):
         self.Send(2)
+        self.LightOn = False
 
     def SetOn(self):
         self.Send(4)
+        self.LightOn = True
 
     def SetError(self):
         self.Send(3)
+        self.LightOn = True
 
     def SetMessage(self):
         self.Send(5)
+        self.LightOn = True
 
     def SetPositionX(self, x):
         x = int(127 + float(x) * 127)
@@ -37,6 +43,14 @@ class HoloProjector(I2C):
 
     def SetColor(self, r, g, b):
         self.Send(9, [r, g, b])
+        self.LightOn = r > 0 or g > 0 or b > 0
+
+    def ToggleLight(self):
+        if self.LightOn:
+            self.SetOff()
+        else:
+            #self.SetColor(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+            self.SetOn()
 
 class FrontHoloProjector(HoloProjector):
     def __init__(self, relay=None):
